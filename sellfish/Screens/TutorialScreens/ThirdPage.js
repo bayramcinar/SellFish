@@ -50,7 +50,7 @@ const TutorialThird = ({ navigation }) => {
           {/* İleri Butonu */}
           <TouchableOpacity
             className="bg-primeBlue px-4 py-3 rounded-xl w-[75%]"
-            onPress={() => navigation.navigate("register")}
+            onPress={() => navigation.navigate("login")}
           >
             <Text
               style={{ fontFamily: "pop-reg" }}
