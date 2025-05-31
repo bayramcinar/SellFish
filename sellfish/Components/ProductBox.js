@@ -5,7 +5,6 @@ import { useNavigation } from "@react-navigation/native";
 export default function ProductBox({ product }) {
   const { width } = Dimensions.get("window");
   const navigation = useNavigation();
-
   return (
     <TouchableOpacity
       className="bg-white p-3 rounded-xl mx-2 mb-4"

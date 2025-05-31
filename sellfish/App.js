@@ -5,9 +5,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { onAuthStateChanged } from "firebase/auth";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { auth } from "./firebase";
-import { View, Text, TouchableOpacity, Platform } from "react-native";
+import { Platform, View, Text, TouchableOpacity } from "react-native";
 
+import { auth } from "./firebase";
+import { CartProvider, useCart } from "./context/CartContext"; // ✅ Cart context
+
+// Screens
 import TutorialFirst from "./Screens/TutorialScreens/FirstPage";
 import TutorialSecond from "./Screens/TutorialScreens/SecondPage";
 import TutorialThird from "./Screens/TutorialScreens/ThirdPage";
@@ -17,7 +20,8 @@ import HomeScreen from "./Screens/Main/HomeScreen";
 import MarketScreen from "./Screens/Main/MarketScreen";
 import AccountScreen from "./Screens/Main/AccountScreen";
 import CartScreen from "./Screens/Main/CartScreen";
-import SellScreen from "./Screens/Main/SellScreen"; // Satış ekranını unutma
+import SellScreen from "./Screens/Main/SellScreen";
+import FishDetailScreen from "./Screens/Main/FishDetailScreen";
 
 import "./global.css";
 
@@ -37,8 +41,10 @@ function CustomTabBarButton({ children, onPress }) {
   );
 }
 
-function MainTabs() {
-  const cartCount = 3;
+// ✅ Bu component, context içindeki cart verisini kullanır
+function MainTabsWithCart() {
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <Tab.Navigator
@@ -50,7 +56,6 @@ function MainTabs() {
         },
         tabBarIcon: ({ color, size }) => {
           let iconName;
-
           if (route.name === "Anasayfa") iconName = "home-outline";
           else if (route.name === "Pazar") iconName = "fish-outline";
           else if (route.name === "Sepet") iconName = "cart-outline";
@@ -78,7 +83,6 @@ function MainTabs() {
     >
       <Tab.Screen name="Anasayfa" component={HomeScreen} />
       <Tab.Screen name="Pazar" component={MarketScreen} />
-
       <Tab.Screen
         name="Satış"
         component={SellScreen}
@@ -87,10 +91,9 @@ function MainTabs() {
             <Ionicons name="add" size={30} color="white" />
           ),
           tabBarButton: (props) => <CustomTabBarButton {...props} />,
-          tabBarLabel: () => null, // Satış butonunun label'ını gizle
+          tabBarLabel: () => null,
         }}
       />
-
       <Tab.Screen name="Sepet" component={CartScreen} />
       <Tab.Screen name="Hesabım" component={AccountScreen} />
     </Tab.Navigator>
@@ -113,21 +116,29 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {!user ? (
-            <>
-              <Stack.Screen name="TutorialFirst" component={TutorialFirst} />
-              <Stack.Screen name="TutorialSecond" component={TutorialSecond} />
-              <Stack.Screen name="TutorialThird" component={TutorialThird} />
-              <Stack.Screen name="login" component={LoginPage} />
-              <Stack.Screen name="register" component={RegisterPage} />
-            </>
-          ) : (
-            <Stack.Screen name="MainTab" component={MainTabs} />
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
+      <CartProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            {!user ? (
+              <>
+                <Stack.Screen name="TutorialFirst" component={TutorialFirst} />
+                <Stack.Screen
+                  name="TutorialSecond"
+                  component={TutorialSecond}
+                />
+                <Stack.Screen name="TutorialThird" component={TutorialThird} />
+                <Stack.Screen name="login" component={LoginPage} />
+                <Stack.Screen name="register" component={RegisterPage} />
+              </>
+            ) : (
+              <>
+                <Stack.Screen name="MainTab" component={MainTabsWithCart} />
+                <Stack.Screen name="FishDetail" component={FishDetailScreen} />
+              </>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
+      </CartProvider>
     </GestureHandlerRootView>
   );
 }

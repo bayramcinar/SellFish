@@ -95,13 +95,13 @@ export default function HomeScreen({ navigation }) {
           >
             <Image
               source={{ uri: fish.image }}
-              style={{ width: "100%", height: 240 }}
+              style={{ width: "100%", height: 250 }}
               resizeMode="cover"
             />
             <View
               style={{
                 position: "absolute",
-                bottom: 30,
+                bottom: 0,
                 width: "100%",
                 backgroundColor: "rgba(0,0,0,0.5)",
                 paddingVertical: 10,
